@@ -474,7 +474,9 @@ class BeaconAdaptiveHeatSoak:
 		level_2_moving_average_history = []
 		level_2_moving_average_history_times = []
 
-		gcmd.respond_info(f"Heat soaking printer until thermal stability, please wait(5-20min)...")
+		wait_time = 10 + 4.5* layer_quality
+
+		gcmd.respond_info(f"Heat soaking printer until thermal stability, please wait... Expected heatsoak time: {wait_time}")
 
 		try:
 			start_time = self.reactor.monotonic()

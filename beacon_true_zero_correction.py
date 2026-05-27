@@ -411,7 +411,7 @@ class ProbingSession:
 		else:
 			raise ValueError('Internal error: unexpected value for _finalize_result')
 
-	def _probe_finalize(self, _, positions):
+	def _probe_finalize(self, positions):
 		zvals = [p[2] for p in positions]
 		logging.info(f'{self.tzc.name}: probed z-values: {", ".join(f"{z:.6f}" for z in zvals)}')
 		good = [z for z in zvals if z < self.tzc.z_rejection_threshold]

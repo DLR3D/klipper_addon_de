@@ -1,0 +1,17 @@
+[Unit]
+Description=Wifi AP manager for Rpi
+Documentation=
+After=network-online.target
+Wants=udev.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=root
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/klipper-addon-de/wifi_ap_manager
+ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper-addon-de/wifi_ap_manager/wifi_ap_manager.py
+Restart=on-failure
+RestartSec=10

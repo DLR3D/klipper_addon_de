@@ -211,6 +211,9 @@ class BeaconProbe:
 
         # Register gcode commands
         sensor_id.register_command(
+            "BEACON_VERBOSE", self.cmd_BEACON_VERBOSE, desc=self.cmd_BEACON_VERBOSE_help
+        )
+        sensor_id.register_command(
             "BEACON_STREAM", self.cmd_BEACON_STREAM, desc=self.cmd_BEACON_STREAM_help
         )
         sensor_id.register_command(
@@ -518,7 +521,7 @@ class BeaconProbe:
 
         self._start_streaming()
         try:
-            return self._probe(speed, allow_faulty=allow_faulty)
+            return self._probe(speed,allow_faulty=allow_faulty)
         finally:
             self._stop_streaming()
 
@@ -590,6 +593,8 @@ class BeaconProbe:
         )
         samples_result = gcmd.get("SAMPLES_RESULT", "mean")
         drop_n = gcmd.get_int("SAMPLES_DROP", 0, minval=0)
+        self.beacon.verbose = gcmd.get_int("VERBOSE", default=0)
+
         retries = 0
         samples = []
 
@@ -1280,6 +1285,11 @@ class BeaconProbe:
                 "Last reading: %.2fHz, %.2fC, %.5fmm" % (last_value, temp, dist)
             )
 
+    cmd_BEACON_VERBOSE_help = "Allows silencing of probe messages"
+
+    def cmd_BEACON_VERBOSE(self, gcmd):
+        self.verbose= gcmd.get_int("VERBOSE", 1)
+
     cmd_BEACON_STREAM_help = "Enable Beacon Streaming"
 
     def cmd_BEACON_STREAM(self, gcmd):
@@ -1408,12 +1418,14 @@ class BeaconProbe:
         top = gcmd.get_float("TOP", 5)
         bottom = gcmd.get_float("BOTTOM", -0.3)
         speed = gcmd.get_float("SPEED", 3, maxval=self.autocal_max_speed)
+        verbose = gcmd.get_int("VERBOSE", 1)
 
         pos = self.toolhead.get_position()
-        gcmd.respond_info(
-            "Poke test at (%.3f,%.3f), from %.3f to %.3f, at %.3f mm/s"
-            % (pos[0], pos[1], top, bottom, speed)
-        )
+        if verbose:
+            gcmd.respond_info(
+                "Poke test at (%.3f,%.3f), from %.3f to %.3f, at %.3f mm/s"
+                % (pos[0], pos[1], top, bottom, speed)
+            )
 
         self.last_probe_result = "failed"
         self.toolhead.manual_move([None, None, top], 100.0)
@@ -1456,14 +1468,15 @@ class BeaconProbe:
                     armpos = self._get_position_at_time(
                         self._clock32_to_time(self.last_contact_msg["armed_clock"])
                     )
-                    gcmd.respond_info("Armed at:     z=%.5f" % (armpos[2],))
-                    gcmd.respond_info(
-                        "Triggered at: z=%.5f with latency=%d"
-                        % (epos[2], self.last_contact_msg["latency"])
-                    )
-                    gcmd.respond_info(
-                        "Overshoot:    %.3f um" % ((epos[2] - spos[2]) * 1000.0,)
-                    )
+                    if verbose:
+                        gcmd.respond_info("Armed at:     z=%.5f" % (armpos[2],))
+                        gcmd.respond_info(
+                            "Triggered at: z=%.5f with latency=%d"
+                            % (epos[2], self.last_contact_msg["latency"])
+                        )
+                        gcmd.respond_info(
+                            "Overshoot:    %.3f um" % ((epos[2] - spos[2]) * 1000.0,)
+                        )
                     self.last_probe_result = "ok"
                     self.last_poke_result = {
                         "target_position": pos,

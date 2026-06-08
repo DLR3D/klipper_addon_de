@@ -27,10 +27,12 @@ except:
     skip_connect = True
 
 # Restart wifi adapter to make sure it is ready to run the next commands
-#try:
 result = subprocess.run( 'sudo nmcli r wifi off', shell=True, capture_output=True, text=True )
 result = subprocess.run( 'sudo nmcli r wifi on', shell=True, capture_output=True, text=True )
 print("Wifi restart sucessful waiting for wifi card to be ready and scanning")
+
+# Scan untill results arrive or 15 seconds pass
+elapsed = 0
 while(True):
     print("Scan loop")
     result = subprocess.run( 'sudo nmcli -f SSID dev wifi', shell=True, capture_output=True, text=True )
@@ -39,24 +41,10 @@ while(True):
     if (len(result) > 2):
         break
     time.sleep(1)
+    elapsed = elapsed +1
 
-    #time.sleep(10)
-#except:
-#    print("Wifi restart fail. Aborting!")
-#    exit()
-
-# Try scanning wifi
-#if not skip_connect:
-#    print("In wifi scan")
-#    try:
-#        #result = subprocess.run( 'sudo iw dev wlan0 scan | grep -oP "(?<=SSID:).*"', shell=True, capture_output=True, text=True )
-#        #result = subprocess.run( 'sudo nmcli -f SSID dev wifi | grep -oP "(?<=SSID:).*"', shell=True, capture_output=True, text=True )
-#        result = subprocess.run( 'sudo nmcli -f SSID dev wifi', shell=True, capture_output=True, text=True )
-#        print(result.stdout)
-#    except:
-#        print("Could not scan for wifi! Skipping to AP generation")
-#        skip_connect = True
-
+    if (elapsed > 15):
+        break
 
 # Check if wifi is on list and attempt connection
 connected = False
@@ -65,7 +53,7 @@ if not skip_connect:
     print("In Wifi check list")
     is_present = False
     for line in result:
-        print(line)
+        #print(line)
         if ssid in line:
             is_present = True
 

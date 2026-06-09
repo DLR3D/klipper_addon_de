@@ -593,7 +593,7 @@ class BeaconProbe:
         )
         samples_result = gcmd.get("SAMPLES_RESULT", "mean")
         drop_n = gcmd.get_int("SAMPLES_DROP", 0, minval=0)
-        self.beacon.verbose = gcmd.get_int("VERBOSE", default=0)
+        self.verbose = gcmd.get_int("VERBOSE", default=0)
 
         retries = 0
         samples = []

@@ -108,6 +108,7 @@ echo "Adaptive Heatsoak: installing python requirements to env."
 
 echo "Motor Sync: installing requirements."
 sudo apt install libatlas-base-dev libopenblas-dev
+"${klipper_env_path}/bin/pip" install matplotlib
 
 # install beacon requirements to env
 echo "beacon: installing python requirements to env."

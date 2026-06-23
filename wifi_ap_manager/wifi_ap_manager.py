@@ -84,7 +84,7 @@ else:
 if not disabled_ap:
     connected = False
     try:
-        result = subprocess.run( 'sudo nmcli device wifi hotspot ifname wlan0 ssid '+ap_name+' password de-alpha', shell=True, capture_output=True, text=True )
+        result = subprocess.run( 'sudo nmcli device wifi hotspot ifname wlan0 ssid '+ap_name+' password '+ap_name.lower()+'_ap', shell=True, capture_output=True, text=True )
         print(result.stdout)
         if result.returncode == 0:
             connected = True

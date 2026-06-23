@@ -98,11 +98,6 @@ fi
 
 sudo apt update
 
-echo "Installing auto wifi manager"
-sudo cp $repo_path/wifi_ap_manager/wifi_ap_manager.service /etc/systemd/system/wifi_ap_manager.service
-sudo systemctl start wifi_ap_manager
-sudo systemctl enable wifi_ap_manager
-
 echo "Adaptive Heatsoak: installing python requirements to env."
 "${klipper_env_path}/bin/pip" install pygam
 
@@ -115,6 +110,11 @@ echo "beacon: installing python requirements to env."
 "${klipper_env_path}/bin/pip" install -r "${beacon_path}/requirements.txt"
 echo "beacon: Updating firmware."
 "$klipper_env_path/bin/python" "$beacon_path/update_firmware.py" update all
+
+echo "Installing auto wifi manager"
+sudo cp $repo_path/wifi_ap_manager/wifi_ap_manager.service /etc/systemd/system/wifi_ap_manager.service
+sudo systemctl start wifi_ap_manager
+sudo systemctl enable wifi_ap_manager
 
 echo "Installation successful restarting klipper now."
 sudo service klipper stop

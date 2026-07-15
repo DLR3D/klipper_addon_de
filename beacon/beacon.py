@@ -1419,6 +1419,7 @@ class BeaconProbe:
         bottom = gcmd.get_float("BOTTOM", -0.3)
         speed = gcmd.get_float("SPEED", 3, maxval=self.autocal_max_speed)
         verbose = gcmd.get_int("VERBOSE", 1)
+        lift_after_probe = gcmd.get_int("LIFT", 1)
 
         pos = self.toolhead.get_position()
         if verbose:
@@ -1494,7 +1495,8 @@ class BeaconProbe:
                     raise
                 finally:
                     self.mcu_contact_probe.deactivate_gcode.run_gcode_from_command()
-                    self.toolhead.manual_move([None, None, top], 100.0)
+                    if(lift_after_probe):
+                        self.toolhead.manual_move([None, None, top], 100.0)
                     self.toolhead.wait_moves()
 
     cmd_BEACON_AUTO_CALIBRATE_help = "Automatically calibrates the Beacon probe"
